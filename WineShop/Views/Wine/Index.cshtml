@@ -1,0 +1,111 @@
+﻿@model WineShop.Models.WinesCModel;
+
+
+<div class="Container">
+    <div class="row fitler-sort justify-content-between">
+        <div class="col-md-6 buttons">
+            <div class="row">
+                @if (Model.Sort != "Price")
+                {<a asp-controller="Wine" asp-action="Index" asp-route-sort="Price"
+                    asp-route-filterColor="@Model.Color" asp-route-filterFlavour="@Model.Flavour"
+                    asp-route-filterCountry="@Model.Country" class="col-md-3">
+                        <div class="sort">Cena rosnąco</div>
+                    </a>}
+                @if (Model.Sort != "PriceDesc")
+                {<a asp-controller="Wine" asp-action="Index" asp-route-sort="PriceDesc" 
+                    asp-route-filterColor="@Model.Color" asp-route-filterFlavour="@Model.Flavour"
+                    asp-route-filterCountry="@Model.Country"class="col-md-3">
+                        <div class="sort">Cena malejąco</div>
+                    </a>}
+                @if (Model.Sort != "Alcohol")
+                {<a asp-controller="Wine" asp-action="Index" asp-route-sort="Alcohol" 
+                    asp-route-filterColor="@Model.Color" asp-route-filterFlavour="@Model.Flavour"
+                    asp-route-filterCountry="@Model.Country"class="col-md-3">
+                        <div class="sort">Alkohol rosnąco</div>
+                    </a>}
+                @if (Model.Sort != "AlcoholDesc")
+                {<a asp-controller="Wine" asp-action="Index" asp-route-sort="AlcoholDesc" 
+                    asp-route-filterColor="@Model.Color" asp-route-filterFlavour="@Model.Flavour"
+                    asp-route-filterCountry="@Model.Country"class="col-md-3">
+                        <div class="sort">Alkohol malejąco</div>
+                    </a>}
+            </div>
+        </div>
+        <div class="col-md-4 buttons">
+            <div>
+                <label asp-for="@Model.Color">Kolor</label>
+                <select asp-items="Model.ColorItems" id="selectColor" asp-for="@Model.Color"></select>
+            </div>
+            <div>
+                <label asp-for="@Model.Flavour">Typ</label>
+                <select asp-items="Model.FlavourItems" id="selectFlavour" asp-for="@Model.Flavour"></select>
+            </div>
+            <div>
+                <label asp-for="@Model.Country">Kraj</label>
+                <select asp-items="Model.CountryItems" id="selectCountry" asp-for="@Model.Country"></select>
+                </div>
+                <a asp-controller="Wine" asp-action="Index">Reset</a>
+            </div>
+
+        </div>
+    @{
+        int i = 0;
+        for (i = 0; i < Math.Ceiling(Model.Wines.Count / 3.0); i++)
+        {
+            <div class="row">
+                @for (int j = 0; j < 3; j++)
+                {
+                    int index = i * 3 + j;
+
+                    @if (index < Model.Wines.Count)
+                    {
+                        Wine wine = Model.Wines[index];
+                        <div class="col-md-4" style="text-align: center;">
+                            <a asp-controller="Wine" asp-action="Details" asp-route-id="@Model.Wines[index].Id">
+                                @{string imgAdd = "/images/czerwona-porzeczka-wino.png";
+                                    switch (wine.Color)
+                                    {
+                                        case "Czerwone":
+                                            imgAdd = "/images/czerwona-porzeczka-wino.png";
+                                            break;
+                                        case "Biale":
+                                            imgAdd = "/images/gruszka.png";
+                                            break;
+                                        case "Rózowe":
+                                            imgAdd = "/images/rose.png";
+                                            break;
+                                    }
+                                    <img src="@imgAdd" height="300"/>
+                                    <ul>
+                                        <li>Producent: @wine.Producer</li>
+                                        <li>Kolor: @wine.Color</li>
+                                        <li>Typ: @wine.Flavour</li>
+                                        <li>Kraj produkcji: @wine.Country</li>
+                                        <li>Zawartość alkoholu: @wine.Alcohol%</li>
+                                        <li>Cena: @wine.Price zł</li>
+                                    </ul>
+                                }
+
+
+                            </a>
+                        </div>
+
+                    }
+                }
+            </div>
+        }
+    }
+</div>
+<script>
+    const changeParam = (nameOfParam, newValue) => {
+        let searchParams = new URLSearchParams(location.search);
+        searchParams.set(nameOfParam, newValue);
+        location.href = location.origin + location.pathname + "?" + searchParams.toString();
+    }
+    const selectColor = document.getElementById("selectColor");
+    const selectFlavour = document.getElementById("selectFlavour");
+    const selectCountry = document.getElementById("selectCountry");
+    selectColor.addEventListener("change", x => changeParam("filterColor", selectColor.value));
+    selectFlavour.addEventListener("change", x => changeParam("filterFlavour", selectFlavour.value));
+    selectCountry.addEventListener("change", x => changeParam("filterCountry", selectCountry.value));
+</script>

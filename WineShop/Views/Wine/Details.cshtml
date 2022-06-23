@@ -1,0 +1,67 @@
+﻿@model WineShop.Models.WineCModel
+
+<div class="Container">
+    <div class="row">
+        <div class="col-md-6 "style="text-align: center;">
+            @{string imgAdd = "/images/czerwona-porzeczka-wino.png";
+                switch (Model.CWine.Color)
+                {
+                    case "Czerwone":
+                        imgAdd = "/images/czerwona-porzeczka-wino.png";
+                        break;
+                    case "Biale":
+                        imgAdd = "/images/gruszka.png";
+                        break;
+                    case "Rózowe":
+                        imgAdd = "/images/rose.png";
+                        break;
+                };
+
+                }
+            <img src="@imgAdd" height="600"/>
+        </div>
+        <div class="col-md-6" style="margin: 200px 0 0 0">
+            <ul>
+                <li>Producent: @Model.CWine.Producer</li>
+                <li>Kolor: @Model.CWine.Color</li>
+                <li>Typ: @Model.CWine.Flavour</li>
+                <li>Kraj produkcji: @Model.CWine.Country</li>
+                <li>Zawartość alkoholu: @Model.CWine.Alcohol%</li>
+                <li>Cena: <span id="price">@Model.CWine.Price</span> PLN</li>
+                <li>Cena USD: <span class="foreign" id="usd"></span> USD</li>
+                <li>Cena EUR: <span class="foreign" id="eur"></span> EUR</li>
+                <li>Cena JPY: <span class="foreign" id="jpy"></span> JPY</li>
+                <li>Cena GBP: <span class="foreign" id="gbp"></span> GBP</li>
+                <li>
+                    <form asp-controller="Wine" asp-action="AddPosition" method="post">
+                        <label for="itemsToBuy">Ilość</label>
+                        <input id="itemsToBuy" type="number" min="1" max="100" value="1" asp-for="@Model.Number">
+                        <input type="hidden" asp-for="@Model.CWine.Id" />
+                        <input type="hidden" asp-for="@Model.CWine.Color" />
+                        <input type="hidden" asp-for="@Model.CWine.Producer" />
+                        <input type="hidden" asp-for="@Model.CWine.Flavour" />
+                        <input type="hidden" asp-for="@Model.CWine.Country" />
+                        <input type="hidden" asp-for="@Model.CWine.Price" />
+                        <input type="hidden" asp-for="@Model.CWine.Alcohol" />
+                        <button type="submit">Dodaj do koszyka</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+    let usd = document.getElementById("usd");
+    let eur = document.getElementById("eur");
+    let jpy = document.getElementById("jpy");
+    let gbp = document.getElementById("gbp");
+    let price = Number(document.getElementById("price").innerText.replace(",", "."));
+    console.log(price);
+    let url = "https://exchange-rates.abstractapi.com/v1/live?api_key=80e427159c554ba2977d40bfff242f8b&base=PLN&target=USD,EUR,JPY,GBP";
+    fetch(url).then(response => response.json()).then(r => {
+        usd.innerText = (Number(r.exchange_rates.USD) * price).toFixed(2);
+        eur.innerText = (Number(r.exchange_rates.EUR) * price).toFixed(2);
+        jpy.innerText = (Number(r.exchange_rates.JPY) * price).toFixed(2);
+        gbp.innerText = (Number(r.exchange_rates.GBP) * price).toFixed(2);
+    });
+</script>

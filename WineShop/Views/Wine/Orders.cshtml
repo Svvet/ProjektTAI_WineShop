@@ -1,0 +1,56 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@model WineShop.Models.OrdersCModel
+
+@if (SignInManager.IsSignedIn(User))
+{
+    @if (Model.Orders != null && Model.Orders.Count > 0)
+    {
+        <div class="Container">
+            <div class="row">
+                <div class="col-md-2">
+
+                    @foreach (var order in Model.Orders)
+                    {
+                        string realised = order.Realised ? "Tak" : "Nie";
+                        <ul class="pos-list">
+                            <li>
+                                Nr zamówienia: @order.Id
+                            </li>
+                            <li>
+                                Data zamówienia: @order.RegisterTime
+                            </li>
+                            <li>
+                                Metoda dostarczenia: @order.DelieveryMethod
+                            </li>
+                            <li>
+                                Adres: @order.Adress
+                            </li>
+                            <li>
+                                Do zapłaty: @order.Total.ToString("F")
+                            </li>
+                            <li>
+                                Zrealizowano: @realised
+                            </li>
+                            <a asp-controller="Wine" asp-action="Basket" asp-route-id="@order.OrderBasket.Id">Kupione wina</a>
+
+
+                        </ul>
+
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <h1>Brak zamówień</h1>
+    }
+}
+else
+{
+    <h1>Zaloguj się</h1>
+}

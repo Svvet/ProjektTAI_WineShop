@@ -1,0 +1,86 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@model WineShop.Models.BasketCModel
+
+@if (SignInManager.IsSignedIn(User))
+{
+    @if (Model.CBasket != null && Model.CBasket.Positions.Count > 0)
+    {
+        double total = 0;
+        <div class="Container">
+            <div class="row justify-content-center">
+                <div class="col-md-2">
+
+                    @foreach (var pos in Model.CBasket.Positions)
+                    {
+                        total += pos.Price;
+                        <ul class="pos-list">
+                            <li>
+                                Producent: @pos.PosWine.Producer
+                            </li>
+                            <li>
+                                Kolor: @pos.PosWine.Color
+                            </li>
+                            <li>
+                                Typ: @pos.PosWine.Flavour
+                            </li>
+                            <li>
+                                Cena za sztukę: @pos.PosWine.Price
+                            </li>
+                            <li>
+                                Sztuk: @pos.Number
+                            </li>
+                            <li>
+                                Cena całkowita: @pos.Price
+                            </li>
+
+
+
+                            @if (!Model.CBasket.Ordered)
+                            {
+                                <form asp-controller="Wine" asp-action="DeletePos" asp-route-id="@pos.Id">
+                                    <button type="submit">Usuń</button>
+                                </form>
+                            }
+                        </ul>
+
+                    }
+                    @{string totalString = $"W sumie: {total.ToString("F")} zł"; }
+                    <h4>@totalString</h4>
+                </div>
+                @if (Model.CBasket.Ordered == false)
+                {
+                    <form asp-controller="Wine" asp-action="Order" method="post">
+                        <div class="col-4 basket">
+                            <div class="row basket-line">
+                                <label asp-for="@Model.COrder.DelieveryMethod"></label>
+                                <select asp-for="@Model.COrder.DelieveryMethod">
+                                    <option value="Kurier">Kurier</option>
+                                    <option value="InPost">InPost</option>
+                                    <option value="Poczta">Poczta</option>
+                                </select>
+                            </div>
+                            <div class="row basket-line">
+                                <label asp-for="@Model.COrder.Adress">Adres</label>
+                                <input type="text" asp-for="@Model.COrder.Adress" />
+                            </div>
+
+
+                            <div class="row basket-line"><button type="submit">Złóż zamówienie</button></div>
+
+                        </div>
+                    </form>
+                }
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <h1>Brak win w koszyku</h1>
+    }
+}
+else
+{
+    <h1>Zaloguj się</h1>
+}
